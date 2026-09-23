@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClinicalPro CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-display: 'Manrope', 'Segoe UI', sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --navy: #2c3968; --navy-soft: #4a5694;
+  --teal: #2fb3b8; --teal-dark: #23898d;
+  --lavender: #8f9bd4; --lavender-soft: #eef0fb;
+  --bg: #f3f4fa; --surface: #ffffff;
+  --text: #1f2540; --text-muted: #656d94; --border: #e2e4f2;
+  --success: #2f9e5c;
+  --warn-bg: #fef3d6; --warn-text: #8a6314; --warn-border: #eccb6b;
+  --danger-bg: #fde3e2; --danger-text: #9c2b26; --danger-border: #e5948f;
+  --ok-bg: #e1f6ea; --ok-text: #1f6b41; --ok-border: #96d6b3;
+  --shadow: 0 4px 20px rgba(44, 57, 104, .08);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+
+header.top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding-block: 22px 14px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand svg { width: 42px; height: 42px; flex: none; }
+.brand-name { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: .2px; line-height: 1.1; color: var(--navy); }
+.brand-name b { color: var(--teal-dark); font-weight: 800; }
+.brand-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.header-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sync-pill { background: var(--lavender-soft); color: var(--navy); border: 1px solid var(--border); border-radius: 999px; padding: 8px 16px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.sync-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex: none; }
+.sync-pill.syncing .dot { background: var(--warn-border); }
+.sync-pill.error .dot { background: var(--danger-border); }
+
+.btn { border: none; border-radius: 9px; padding: 10px 18px; font-weight: 700; font-size: 13px; cursor: pointer; font-family: var(--font-display); }
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-primary:hover { background: var(--teal-dark); }
+.btn-primary:disabled { opacity: .6; cursor: default; }
+.btn-ghost { background: var(--lavender-soft); color: var(--navy); }
+.btn-ghost:hover { background: var(--lavender); color: #fff; }
+.btn-danger { background: var(--danger-bg); color: var(--danger-text); }
+.btn-danger:hover { background: var(--danger-border); }
+
+nav.tabs { display: flex; gap: 4px; padding-bottom: 14px; flex-wrap: wrap; }
+.tab-btn { border: none; background: transparent; padding: 9px 18px; border-radius: 999px; font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+.tab-btn:hover { background: var(--lavender-soft); color: var(--navy); }
+.tab-btn.active { background: var(--navy); color: #fff; }
+
+nav.unit-tabs { display: flex; gap: 6px; padding: 12px; margin-bottom: 14px; background: var(--lavender-soft); border-radius: 14px; overflow-x: auto; }
+.unit-tab-btn { border: 1px solid transparent; background: var(--surface); color: var(--text-muted); padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: 12.5px; cursor: pointer; white-space: nowrap; flex: none; }
+.unit-tab-btn:hover { border-color: var(--lavender); color: var(--navy); }
+.unit-tab-btn.active { background: var(--teal); color: #fff; }
+
+.filterbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+.filterbar input, .filterbar select { padding: 9px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 13px; background: var(--surface); color: var(--text); font-family: var(--font-body); }
+.filterbar input { flex: 1; min-width: 180px; }
+.filter-count { margin-left: auto; color: var(--text-muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+main { padding-bottom: 48px; min-height: 200px; }
+
+.kanban { display: grid; grid-template-columns: repeat(5, minmax(220px, 1fr)); gap: 12px; overflow-x: auto; }
+.kanban-col { background: var(--surface); border-radius: 14px; padding: 10px; min-height: 120px; border-top: 4px solid var(--lavender); box-shadow: var(--shadow); }
+.kanban-col.status-aguardando { border-top-color: #9aa2c9; }
+.kanban-col.status-contatado { border-top-color: var(--lavender); }
+.kanban-col.status-interessado { border-top-color: var(--warn-border); }
+.kanban-col.status-fechado { border-top-color: var(--success); }
+.kanban-col.status-sem_interesse { border-top-color: var(--danger-border); }
+.kanban-col-header { display: flex; justify-content: space-between; font-family: var(--font-display); font-weight: 700; font-size: 12.5px; color: var(--navy); margin-bottom: 8px; padding: 0 4px; }
+.kanban-col-header .count { color: var(--text-muted); }
+.kanban-cards { display: flex; flex-direction: column; gap: 8px; min-height: 30px; }
+.kanban-cards.dragover { background: var(--lavender-soft); border-radius: 8px; }
+
+.lead-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: grab; }
+.lead-card.alert-amarelo { background: var(--warn-bg); border-color: var(--warn-border); }
+.lead-card.alert-vermelho { background: var(--danger-bg); border-color: var(--danger-border); }
+.lead-card.alert-concluido { background: var(--ok-bg); border-color: var(--ok-border); }
+.lead-card .name { font-weight: 700; font-size: 13px; margin-bottom: 3px; }
+.lead-card .meta { font-size: 11.5px; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.lead-card .value { font-weight: 700; color: var(--navy); }
+.badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--lavender-soft); color: var(--navy); }
+.badge.cartao { background: var(--ok-bg); color: var(--ok-text); }
+
+.alert-banner { margin-top: 8px; padding: 6px 8px; border-radius: 7px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.alert-banner.amarelo { background: var(--warn-border); color: #4a3708; }
+.alert-banner.vermelho { background: var(--danger-border); color: #4a1512; }
+.alert-banner.concluido { background: var(--ok-border); color: #123822; }
+.alert-banner label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-weight: 700; white-space: nowrap; }
+.alert-banner input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; }
+
+.table-wrap { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { color: var(--text-muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; cursor: pointer; user-select: none; font-family: var(--font-display); }
+tbody tr:hover { background: var(--lavender-soft); cursor: pointer; }
+tbody tr.alert-amarelo td { background: var(--warn-bg); }
+tbody tr.alert-vermelho td { background: var(--danger-bg); }
+tbody tr.alert-concluido td { background: var(--ok-bg); }
+td.obs-col { white-space: normal; max-width: 240px; color: var(--text-muted); font-size: 12px; }
+td.alert-cell { white-space: normal; min-width: 140px; }
+.status-pill { padding: 3px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
+.status-pill.status-aguardando { background: var(--lavender-soft); color: var(--text-muted); }
+.status-pill.status-contatado { background: var(--lavender-soft); color: var(--navy); }
+.status-pill.status-interessado { background: var(--warn-bg); color: var(--warn-text); }
+.status-pill.status-fechado { background: var(--ok-bg); color: var(--ok-text); }
+.status-pill.status-sem_interesse { background: var(--danger-bg); color: var(--danger-text); }
+.alert-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+.alert-pill.amarelo { background: var(--warn-border); color: #4a3708; }
+.alert-pill.vermelho { background: var(--danger-border); color: #4a1512; }
+.alert-pill.concluido { background: var(--ok-border); color: #123822; }
+.alert-pill input { width: 12px; height: 12px; }
+
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.kpi-card { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 16px; }
+.kpi-label { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-family: var(--font-display); }
+.kpi-value { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--navy); margin-top: 6px; }
+.kpi-card.accent .kpi-value { color: var(--teal-dark); }
+.dash-section { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; margin-bottom: 14px; }
+.dash-section h3 { margin: 0 0 12px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
+.funnel-row { display: grid; grid-template-columns: 140px 1fr 44px; align-items: center; gap: 10px; font-size: 12.5px; margin-bottom: 8px; }
+.funnel-track { background: var(--lavender-soft); border-radius: 6px; height: 13px; overflow: hidden; }
+.funnel-fill { background: var(--teal); height: 100%; border-radius: 6px; }
+.funnel-row .num { text-align: right; }
+.unit-table td, .unit-table th { white-space: nowrap; }
+
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty-state h3 { color: var(--navy); font-family: var(--font-display); }
+footer { text-align: center; padding: 24px 0 40px; color: var(--text-muted); font-size: 11.5px; }
+footer b { color: var(--navy); }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(17, 20, 42, .55); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+.modal-overlay[hidden] { display: none; }
+.modal { background: var(--surface); border-radius: 16px; width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 70px rgba(0,0,0,.3); }
+.modal-lg { max-width: 920px; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--border); }
+.modal-header h2 { margin: 0; font-family: var(--font-display); font-size: 16px; color: var(--navy); }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); line-height: 1; }
+.modal-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; }
+.modal-body p { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; font-weight: 700; color: var(--text-muted); }
+label.full { grid-column: 1 / -1; }
+input, select, textarea { font-family: var(--font-body); font-size: 13.5px; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: var(--surface); }
+textarea { resize: vertical; }
+.checkbox-label { flex-direction: row; align-items: center; gap: 8px; font-weight: 700; color: var(--text); }
+.checkbox-label input { width: 16px; height: 16px; }
+.alert-box { padding: 10px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 700; }
+.alert-box.amarelo { background: var(--warn-bg); color: var(--warn-text); }
+.alert-box.vermelho { background: var(--danger-bg); color: var(--danger-text); }
+.alert-box.concluido { background: var(--ok-bg); color: var(--ok-text); }
+.note-adder { display: flex; gap: 8px; }
+.note-adder input { flex: 1; }
+.modal-footer { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--border); padding-top: 14px; }
+.spacer { flex: 1; }
+
+#bulkTable input, #bulkTable select { width: 100%; min-width: 90px; padding: 6px 7px; font-size: 12.5px; }
+#bulkTable th { font-size: 10.5px; padding: 6px 8px; }
+#bulkTable td { padding: 6px 8px; }
+#bulkTable td:nth-child(3) input { min-width: 140px; }
+.btn-remove-row { border: none; background: var(--danger-bg); color: var(--danger-text); border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 15px; line-height: 1; }
+.btn-remove-row:hover { background: var(--danger-border); }
+
+@media (max-width: 860px) {
+  .kanban { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="48" y="8" width="24" height="104" rx="12" fill="#b7bfe6"/>
+        <rect x="48" y="60" width="24" height="52" rx="12" fill="#2fb3b8"/>
+        <rect x="8" y="48" width="64" height="24" rx="12" fill="#b7bfe6"/>
+        <rect x="60" y="48" width="52" height="24" rx="12" fill="#2fb3b8"/>
+        <circle cx="76" cy="60" r="17" fill="#2c3968"/>
+        <circle cx="76" cy="60" r="5" fill="#fff"/>
+      </svg>
+      <div>
+        <div class="brand-name">CLINICAL<b>PRO</b></div>
+        <div class="brand-sub">Acompanhamento de Orçamentos · 5 unidades</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="sync-pill" id="syncPill"><span class="dot"></span><span id="syncText">Carregando...</span></div>
+      <button class="btn btn-primary" id="btnNovo">+ Novo Orçamento</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-view="kanban">Funil</button>
+    <button class="tab-btn" data-view="lista">Lista</button>
+    <button class="tab-btn" data-view="dashboard">Painel</button>
+  </nav>
+
+  <nav class="unit-tabs" id="unitTabs">
+    <button class="unit-tab-btn active" data-unidade="">Geral</button>
+  </nav>
+
+  <div class="filterbar">
+    <input type="search" id="filterBusca" placeholder="Buscar por nome ou telefone...">
+    <select id="filterEspecialidade"><option value="">Todas as especialidades</option></select>
+    <span class="filter-count" id="filterCount"></span>
+  </div>
+
+  <main id="app"><div class="empty-state"><h3>Carregando dados...</h3></div></main>
+
+  <footer><b>ClinicalPro CRM</b> &middot; qualquer pessoa com este link pode ver e editar &middot; atualiza automaticamente a cada ~20s</footer>
+</div>
+
+<!-- Modal: editar -->
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal">
+    <div class="modal-header"><h2 id="modalTitle">Editar Orçamento</h2><button class="modal-close" id="modalClose">&times;</button></div>
+    <form id="leadForm" class="modal-body">
+      <input type="hidden" id="fId">
+      <div class="alert-box" id="fAlertBox" hidden></div>
+      <div class="form-row">
+        <label>Unidade<select id="fUnidade" required></select></label>
+        <label>Data de contato<input type="date" id="fData" required></label>
+      </div>
+      <div class="form-row">
+        <label>Nome do paciente<input type="text" id="fNome" required placeholder="Nome completo"></label>
+        <label>Telefone<input type="text" id="fTelefone" placeholder="99999-9999"></label>
+      </div>
+      <div class="form-row">
+        <label>Especialidade / Exame<input type="text" id="fEspecialidade" list="especialidadesList" placeholder="Ex: Laboratório, Cardiologia..."><datalist id="especialidadesList"></datalist></label>
+        <label>Valor do orçamento (R$)<input type="number" id="fValor" min="0" step="0.01" placeholder="0,00"></label>
+      </div>
+      <div class="form-row">
+        <label>Etapa do funil<select id="fStatus"></select></label>
+        <label class="checkbox-label"><input type="checkbox" id="fCartao"> Falou sobre o cartão saúde</label>
+      </div>
+      <div class="form-row">
+        <label class="checkbox-label"><input type="checkbox" id="fSegundoContato"> 2º contato realizado</label>
+        <label class="checkbox-label"><input type="checkbox" id="fLigacao"> Ligação realizada</label>
+      </div>
+      <label class="full">Observações<textarea id="fObs" rows="4" placeholder="Anotações sobre o contato..."></textarea></label>
+      <div class="note-adder full">
+        <input type="text" id="fNovaNota" placeholder="Adicionar nota rápida com a data de hoje...">
+        <button type="button" class="btn btn-ghost" id="btnAddNota">+ Nota</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="btnExcluir">Excluir</button>
+        <div class="spacer"></div>
+        <button type="button" class="btn btn-ghost" id="btnCancelar">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btnSalvarEdicao">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: cadastro em lote -->
+<div class="modal-overlay" id="bulkOverlay" hidden>
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2>Novos Orçamentos</h2><button class="modal-close" id="bulkClose">&times;</button></div>
+    <div class="modal-body">
+      <p>Preencha uma linha por paciente. Deixe o nome em branco nas linhas que não for usar.</p>
+      <div class="form-row">
+        <label>Unidade padrão (novas linhas)<select id="bulkUnidadePadrao"></select></label>
+        <label>Data de contato padrão<input type="date" id="bulkDataPadrao"></label>
+      </div>
+      <div class="table-wrap">
+        <table id="bulkTable">
+          <thead><tr><th>Unidade</th><th>Data</th><th>Nome</th><th>Telefone</th><th>Especialidade</th><th>Valor (R$)</th><th></th></tr></thead>
+          <tbody id="bulkTbody"></tbody>
+        </table>
+      </div>
+      <button type="button" class="btn btn-ghost" id="btnAddRow">+ Adicionar linha</button>
+    </div>
+    <div class="modal-footer">
+      <div class="spacer"></div>
+      <button type="button" class="btn btn-ghost" id="bulkCancelar">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnSalvarLote">Salvar todos</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var UNITS = ['Chã Grande', 'Pombos', 'Primavera', 'Rio Formoso', 'Sirinhaém'];
+var STATUS_ORDER = ['aguardando', 'contatado', 'interessado', 'fechado', 'sem_interesse'];
+var STATUS_LABELS = {
+  aguardando: 'Aguardando contato', contatado: 'Contatado', interessado: 'Interessado',
+  fechado: 'Fechado', sem_interesse: 'Sem interesse',
+};
+var ESPECIALIDADE_SUGESTOES = ['Laboratório', 'Cardiologia', 'Endocrinologia', 'Ultrassom', 'Eco', 'Endovaginal', 'Raio-X', 'HPV'];
+var POLL_MS = 20000;
+
+var state = {
+  leads: [], loaded: false, view: 'kanban',
+  filters: { unidade: '', busca: '', especialidade: '' },
+  sort: { field: 'dataContato', dir: 'desc' },
+  editingId: null, modalOpen: false,
+};
+
+/* ---------------- ponte com o banco (Firebase Realtime Database, REST) ---------------- */
+
+var FIREBASE_URL = 'https://clinicalpro-crm-default-rtdb.firebaseio.com';
+
+async function fbRequest(method, path, data) {
+  var opts = { method: method };
+  if (data !== undefined) opts.body = JSON.stringify(data);
+  var res = await fetch(FIREBASE_URL + path + '.json', opts);
+  if (!res.ok) throw new Error('Falha na comunicação com o banco (' + res.status + ')');
+  return res.json();
+}
+
+function setSync(status, text) {
+  var pill = document.getElementById('syncPill');
+  pill.className = 'sync-pill' + (status ? ' ' + status : '');
+  document.getElementById('syncText').textContent = text;
+}
+
+async function loadLeads(isPoll) {
+  if (!isPoll) setSync('syncing', 'Carregando...');
+  try {
+    var obj = await fbRequest('GET', '/leads');
+    state.leads = Object.keys(obj || {}).map(function (id) {
+      var l = obj[id]; l.id = id; return l;
+    });
+    state.loaded = true;
+    setSync('', 'Sincronizado');
+    if (!state.modalOpen) render();
+  } catch (e) {
+    setSync('error', 'Erro ao carregar');
+    console.error(e);
+  }
+}
+
+setInterval(function () { loadLeads(true); }, POLL_MS);
+
+/* ---------------- utils ---------------- */
+
+function todayISO() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function fmtDateBR(iso) { if (!iso) return '—'; var p = iso.split('-'); return (p.length !== 3) ? iso : (p[2] + '/' + p[1] + '/' + p[0]); }
+function fmtMoney(v) { if (v == null || isNaN(v)) return 'R$ 0,00'; return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+
+function daysSince(iso) {
+  if (!iso) return -1;
+  var d = new Date(iso + 'T00:00:00');
+  if (isNaN(d.getTime())) return -1;
+  var today = new Date(todayISO() + 'T00:00:00');
+  return Math.round((today - d) / 86400000);
+}
+function getAlertState(l) {
+  if (l.status !== 'contatado') return null;
+  if (l.ligacaoFeita) return 'concluido';
+  if (l.segundoContatoFeito) return daysSince(l.segundoContatoData) >= 1 ? 'vermelho' : null;
+  return daysSince(l.dataContato) >= 1 ? 'amarelo' : null;
+}
+function specialtyCategories(esp) {
+  var s = (esp || '').toLowerCase();
+  var cats = [];
+  if (/lab/.test(s)) cats.push('Laboratório');
+  if (/cardio/.test(s)) cats.push('Cardiologia');
+  if (/endocrin/.test(s)) cats.push('Endocrinologia');
+  if (/ultra|eco|endovaginal|usg|hpv/.test(s)) cats.push('Imagem');
+  if (cats.length === 0) cats.push('Outros');
+  return cats;
+}
+
+/* ---------------- filtros / ordenação ---------------- */
+
+function getFilteredLeads() {
+  var f = state.filters;
+  var buscaLower = f.busca.trim().toLowerCase();
+  return state.leads.filter(function (l) {
+    if (f.unidade && l.unidade !== f.unidade) return false;
+    if (f.especialidade && specialtyCategories(l.especialidade).indexOf(f.especialidade) === -1) return false;
+    if (buscaLower && ((l.nome + ' ' + l.telefone).toLowerCase().indexOf(buscaLower) === -1)) return false;
+    return true;
+  });
+}
+function sortLeads(leads) {
+  var field = state.sort.field, dir = state.sort.dir;
+  var mult = dir === 'asc' ? 1 : -1;
+  return leads.slice().sort(function (a, b) {
+    var av = a[field], bv = b[field];
+    if (field === 'valor') { av = av || 0; bv = bv || 0; } else { av = (av || '').toString().toLowerCase(); bv = (bv || '').toString().toLowerCase(); }
+    if (av < bv) return -1 * mult;
+    if (av > bv) return 1 * mult;
+    return 0;
+  });
+}
+
+/* ---------------- shell ---------------- */
+
+function populateStaticSelects() {
+  var unitTabs = document.getElementById('unitTabs');
+  var fUnidade = document.getElementById('fUnidade');
+  UNITS.forEach(function (u) {
+    unitTabs.insertAdjacentHTML('beforeend', '<button class="unit-tab-btn" data-unidade="' + esc(u) + '">' + esc(u) + '</button>');
+    fUnidade.insertAdjacentHTML('beforeend', '<option value="' + esc(u) + '">' + esc(u) + '</option>');
+  });
+  var especFilter = document.getElementById('filterEspecialidade');
+  ['Laboratório', 'Cardiologia', 'Endocrinologia', 'Imagem', 'Outros'].forEach(function (c) {
+    especFilter.insertAdjacentHTML('beforeend', '<option value="' + esc(c) + '">' + esc(c) + '</option>');
+  });
+  var fStatus = document.getElementById('fStatus');
+  STATUS_ORDER.forEach(function (s) { fStatus.insertAdjacentHTML('beforeend', '<option value="' + s + '">' + esc(STATUS_LABELS[s]) + '</option>'); });
+  var dl = document.getElementById('especialidadesList');
+  ESPECIALIDADE_SUGESTOES.forEach(function (e) { dl.insertAdjacentHTML('beforeend', '<option value="' + esc(e) + '">'); });
+}
+
+function switchView(view) {
+  state.view = view;
+  document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.view === view); });
+  render();
+}
+
+function render() {
+  if (!state.loaded) return;
+  var filtered = getFilteredLeads();
+  document.getElementById('filterCount').textContent = filtered.length + ' orçamento(s)';
+  var app = document.getElementById('app');
+  if (state.view === 'kanban') app.innerHTML = renderKanban(filtered);
+  else if (state.view === 'lista') app.innerHTML = renderLista(sortLeads(filtered));
+  else app.innerHTML = renderDashboard(filtered);
+  attachViewListeners();
+}
+
+/* ---------------- kanban ---------------- */
+
+function renderKanban(leads) {
+  if (state.leads.length === 0) return '<div class="empty-state"><h3>Nenhum orçamento cadastrado</h3><p>Clique em "+ Novo Orçamento" para começar.</p></div>';
+  var cols = STATUS_ORDER.map(function (status) {
+    var items = leads.filter(function (l) { return l.status === status; });
+    return '<div class="kanban-col status-' + status + '">' +
+      '<div class="kanban-col-header"><span>' + esc(STATUS_LABELS[status]) + '</span><span class="count">' + items.length + '</span></div>' +
+      '<div class="kanban-cards" data-status="' + status + '">' + items.map(cardHtml).join('') + '</div></div>';
+  }).join('');
+  return '<div class="kanban">' + cols + '</div>';
+}
+
+function cardHtml(l) {
+  var alertState = getAlertState(l);
+  return '<div class="lead-card' + (alertState ? ' alert-' + alertState : '') + '" draggable="true" data-id="' + l.id + '">' +
+    '<div class="name">' + esc(l.nome) + '</div>' +
+    '<div class="meta"><span class="badge">' + esc(l.unidade) + '</span>' + (l.falouCartao ? '<span class="badge cartao">Cartão</span>' : '') + '<span>' + esc(l.especialidade || '—') + '</span></div>' +
+    '<div class="meta" style="margin-top:6px;justify-content:space-between"><span class="value">' + fmtMoney(l.valor) + '</span><span>' + fmtDateBR(l.dataContato) + '</span></div>' +
+    alertBannerHtml(l, alertState) + '</div>';
+}
+function alertBannerHtml(l, alertState) {
+  if (alertState === 'amarelo') return '<div class="alert-banner amarelo" draggable="false"><span>⚠ 2º contato</span><label><input type="checkbox" class="chk-2contato" data-id="' + l.id + '"> feito</label></div>';
+  if (alertState === 'vermelho') return '<div class="alert-banner vermelho" draggable="false"><span>☎ Ligar</span><label><input type="checkbox" class="chk-ligacao" data-id="' + l.id + '"> feito</label></div>';
+  if (alertState === 'concluido') return '<div class="alert-banner concluido" draggable="false"><span>✓ Processo finalizado</span></div>';
+  return '';
+}
+function alertPillHtml(l, alertState) {
+  if (alertState === 'amarelo') return '<span class="alert-pill amarelo"><label><input type="checkbox" class="chk-2contato" data-id="' + l.id + '"> 2º contato</label></span>';
+  if (alertState === 'vermelho') return '<span class="alert-pill vermelho"><label><input type="checkbox" class="chk-ligacao" data-id="' + l.id + '"> Ligar</label></span>';
+  if (alertState === 'concluido') return '<span class="alert-pill concluido">✓ Finalizado</span>';
+  return '<span style="color:var(--text-muted)">—</span>';
+}
+
+/* ---------------- lista ---------------- */
+
+var LIST_COLUMNS = [
+  { field: 'unidade', label: 'Unidade' }, { field: 'dataContato', label: 'Data' }, { field: 'nome', label: 'Nome' },
+  { field: 'telefone', label: 'Telefone' }, { field: 'especialidade', label: 'Especialidade' },
+  { field: 'valor', label: 'Valor' }, { field: 'status', label: 'Status' },
+];
+
+function renderLista(leads) {
+  if (leads.length === 0) return '<div class="empty-state"><h3>Nada encontrado</h3></div>';
+  var head = LIST_COLUMNS.map(function (c) {
+    var arrow = state.sort.field === c.field ? (state.sort.dir === 'asc' ? ' ▲' : ' ▼') : '';
+    return '<th data-field="' + c.field + '">' + esc(c.label) + arrow + '</th>';
+  }).join('');
+  var rows = leads.map(function (l) {
+    var alertState = getAlertState(l);
+    return '<tr data-id="' + l.id + '"' + (alertState ? ' class="alert-' + alertState + '"' : '') + '>' +
+      '<td>' + esc(l.unidade) + '</td><td>' + fmtDateBR(l.dataContato) + '</td><td>' + esc(l.nome) + '</td><td>' + esc(l.telefone) + '</td>' +
+      '<td>' + esc(l.especialidade) + '</td><td>' + fmtMoney(l.valor) + '</td>' +
+      '<td><span class="status-pill status-' + l.status + '">' + esc(STATUS_LABELS[l.status]) + '</span></td>' +
+      '<td class="alert-cell">' + alertPillHtml(l, alertState) + '</td>' +
+      '<td class="obs-col">' + esc((l.observacoes || '').slice(0, 90)) + ((l.observacoes || '').length > 90 ? '…' : '') + '</td></tr>';
+  }).join('');
+  return '<div class="table-wrap"><table><thead><tr>' + head + '<th>Alerta</th><th>Observações</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+/* ---------------- dashboard ---------------- */
+
+function renderDashboard(leads) {
+  if (leads.length === 0) return '<div class="empty-state"><h3>Sem dados para exibir</h3></div>';
+  var total = leads.length;
+  var valorTotal = leads.reduce(function (s, l) { return s + (l.valor || 0); }, 0);
+  var ticketMedio = valorTotal / total;
+  var valores = leads.map(function (l) { return l.valor || 0; });
+  var maior = Math.max.apply(null, valores), menor = Math.min.apply(null, valores);
+  var fechados = leads.filter(function (l) { return l.status === 'fechado'; });
+  var semInteresse = leads.filter(function (l) { return l.status === 'sem_interesse'; });
+  var emAberto = leads.filter(function (l) { return ['fechado', 'sem_interesse'].indexOf(l.status) === -1; });
+  var valorConvertido = fechados.reduce(function (s, l) { return s + (l.valor || 0); }, 0);
+  var valorPerdido = semInteresse.reduce(function (s, l) { return s + (l.valor || 0); }, 0);
+  var valorAberto = emAberto.reduce(function (s, l) { return s + (l.valor || 0); }, 0);
+  var taxaConversaoQtd = (fechados.length / total) * 100;
+  var taxaConversaoValor = valorTotal ? (valorConvertido / valorTotal) * 100 : 0;
+  var ticketConvertido = fechados.length ? valorConvertido / fechados.length : 0;
+  var falaramCartao = leads.filter(function (l) { return l.falouCartao; }).length;
+
+  var funnelRows = STATUS_ORDER.map(function (s) {
+    var count = leads.filter(function (l) { return l.status === s; }).length;
+    var pct = total ? (count / total) * 100 : 0;
+    return '<div class="funnel-row"><span>' + esc(STATUS_LABELS[s]) + '</span><div class="funnel-track"><div class="funnel-fill" style="width:' + pct + '%"></div></div><span class="num">' + count + '</span></div>';
+  }).join('');
+
+  var cats = ['Laboratório', 'Cardiologia', 'Endocrinologia', 'Imagem', 'Outros'];
+  var maxCat = Math.max.apply(null, [1].concat(cats.map(function (c) { return leads.filter(function (l) { return specialtyCategories(l.especialidade).indexOf(c) !== -1; }).length; })));
+  var specRows = cats.map(function (c) {
+    var count = leads.filter(function (l) { return specialtyCategories(l.especialidade).indexOf(c) !== -1; }).length;
+    var pct = (count / maxCat) * 100;
+    return '<div class="funnel-row"><span>' + c + '</span><div class="funnel-track"><div class="funnel-fill" style="width:' + pct + '%"></div></div><span class="num">' + count + '</span></div>';
+  }).join('');
+
+  var unitTable = '';
+  if (!state.filters.unidade) {
+    var rows = UNITS.map(function (u) {
+      var us = leads.filter(function (l) { return l.unidade === u; });
+      if (us.length === 0) return '<tr><td>' + esc(u) + '</td><td colspan="4" style="color:var(--text-muted)">sem orçamentos</td></tr>';
+      var uValor = us.reduce(function (s, l) { return s + (l.valor || 0); }, 0);
+      var uFechados = us.filter(function (l) { return l.status === 'fechado'; }).length;
+      var uTaxa = (uFechados / us.length) * 100;
+      return '<tr><td>' + esc(u) + '</td><td>' + us.length + '</td><td>' + fmtMoney(uValor) + '</td><td>' + fmtMoney(uValor / us.length) + '</td><td>' + uTaxa.toFixed(0) + '%</td></tr>';
+    }).join('');
+    unitTable = '<div class="dash-section"><h3>Por unidade</h3><div class="table-wrap"><table class="unit-table">' +
+      '<thead><tr><th>Unidade</th><th>Qtd.</th><th>Valor total</th><th>Ticket médio</th><th>Taxa conversão</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+  }
+
+  return '' +
+    '<div class="dash-grid">' +
+      '<div class="kpi-card"><div class="kpi-label">Orçamentos</div><div class="kpi-value">' + total + '</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Valor total orçado</div><div class="kpi-value">' + fmtMoney(valorTotal) + '</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Ticket médio</div><div class="kpi-value">' + fmtMoney(ticketMedio) + '</div></div>' +
+      '<div class="kpi-card accent"><div class="kpi-label">Taxa de conversão (qtd)</div><div class="kpi-value">' + taxaConversaoQtd.toFixed(0) + '%</div></div>' +
+      '<div class="kpi-card accent"><div class="kpi-label">Taxa de conversão (valor)</div><div class="kpi-value">' + taxaConversaoValor.toFixed(0) + '%</div></div>' +
+    '</div>' +
+    '<div class="dash-grid">' +
+      '<div class="kpi-card"><div class="kpi-label">Maior orçamento</div><div class="kpi-value">' + fmtMoney(maior) + '</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Menor orçamento</div><div class="kpi-value">' + fmtMoney(menor) + '</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Valor convertido</div><div class="kpi-value">' + fmtMoney(valorConvertido) + '</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Valor perdido</div><div class="kpi-value">' + fmtMoney(valorPerdido) + '</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Valor em aberto</div><div class="kpi-value">' + fmtMoney(valorAberto) + '</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Ticket médio convertido</div><div class="kpi-value">' + fmtMoney(ticketConvertido) + '</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Falaram do cartão saúde</div><div class="kpi-value">' + falaramCartao + '</div></div>' +
+    '</div>' +
+    '<div class="dash-section"><h3>Funil de relacionamento</h3>' + funnelRows + '</div>' +
+    '<div class="dash-section"><h3>Menções por especialidade</h3>' + specRows + '</div>' +
+    unitTable;
+}
+
+/* ---------------- listeners de view ---------------- */
+
+function attachViewListeners() {
+  document.querySelectorAll('.lead-card[data-id]').forEach(function (card) {
+    card.addEventListener('dragstart', function (e) { e.dataTransfer.setData('text/plain', card.dataset.id); });
+    card.addEventListener('click', function () { openEdit(card.dataset.id); });
+  });
+  document.querySelectorAll('.kanban-cards').forEach(function (col) {
+    col.addEventListener('dragover', function (e) { e.preventDefault(); col.classList.add('dragover'); });
+    col.addEventListener('dragleave', function () { col.classList.remove('dragover'); });
+    col.addEventListener('drop', function (e) {
+      e.preventDefault();
+      col.classList.remove('dragover');
+      var id = e.dataTransfer.getData('text/plain');
+      var lead = state.leads.find(function (l) { return l.id === id; });
+      if (lead && lead.status !== col.dataset.status) writeUpdate(id, { status: col.dataset.status });
+    });
+  });
+  document.querySelectorAll('#app tbody tr[data-id]').forEach(function (tr) {
+    tr.addEventListener('click', function () { openEdit(tr.dataset.id); });
+  });
+  document.querySelectorAll('#app th[data-field]').forEach(function (th) {
+    th.addEventListener('click', function () {
+      var field = th.dataset.field;
+      if (state.sort.field === field) state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+      else { state.sort.field = field; state.sort.dir = 'asc'; }
+      render();
+    });
+  });
+  document.querySelectorAll('#app .alert-banner, #app .alert-pill').forEach(function (el) { el.addEventListener('click', function (e) { e.stopPropagation(); }); });
+  document.querySelectorAll('#app .chk-2contato').forEach(function (chk) { chk.addEventListener('change', function () { toggleSegundoContato(chk.dataset.id); }); });
+  document.querySelectorAll('#app .chk-ligacao').forEach(function (chk) { chk.addEventListener('change', function () { toggleLigacao(chk.dataset.id); }); });
+}
+
+async function toggleSegundoContato(id) {
+  var l = state.leads.find(function (x) { return x.id === id; });
+  if (!l) return;
+  var feito = !l.segundoContatoFeito;
+  await writeUpdate(id, { segundoContatoFeito: feito, segundoContatoData: feito ? todayISO() : null });
+  if (state.editingId === id) refreshModalAlert();
+}
+async function toggleLigacao(id) {
+  var l = state.leads.find(function (x) { return x.id === id; });
+  if (!l) return;
+  var feito = !l.ligacaoFeita;
+  await writeUpdate(id, { ligacaoFeita: feito, ligacaoData: feito ? todayISO() : null });
+  if (state.editingId === id) refreshModalAlert();
+}
+
+async function writeUpdate(id, patch) {
+  setSync('syncing', 'Salvando...');
+  patch = Object.assign({}, patch, { updatedAt: new Date().toISOString() });
+  try {
+    await fbRequest('PATCH', '/leads/' + id, patch);
+    var l = state.leads.find(function (x) { return x.id === id; });
+    if (l) Object.assign(l, patch);
+    setSync('', 'Sincronizado');
+    if (!state.modalOpen) render();
+  } catch (e) {
+    setSync('error', 'Erro ao salvar');
+    alert('Não foi possível salvar. Tente novamente.\n' + (e && e.message ? e.message : ''));
+  }
+}
+
+/* ---------------- modal: editar ---------------- */
+
+function openEdit(id) {
+  var l = state.leads.find(function (x) { return x.id === id; });
+  if (!l) return;
+  state.editingId = id;
+  state.modalOpen = true;
+  document.getElementById('modalTitle').textContent = 'Editar Orçamento';
+  document.getElementById('fId').value = l.id;
+  document.getElementById('fUnidade').value = l.unidade;
+  document.getElementById('fData').value = l.dataContato || '';
+  document.getElementById('fNome').value = l.nome;
+  document.getElementById('fTelefone').value = l.telefone;
+  document.getElementById('fEspecialidade').value = l.especialidade;
+  document.getElementById('fValor').value = l.valor || '';
+  document.getElementById('fStatus').value = l.status;
+  document.getElementById('fCartao').checked = !!l.falouCartao;
+  document.getElementById('fSegundoContato').checked = !!l.segundoContatoFeito;
+  document.getElementById('fLigacao').checked = !!l.ligacaoFeita;
+  document.getElementById('fObs').value = l.observacoes || '';
+  document.getElementById('fNovaNota').value = '';
+  updateModalAlertBox(l);
+  showModal('modalOverlay');
+}
+function refreshModalAlert() {
+  var id = document.getElementById('fId').value;
+  var l = state.leads.find(function (x) { return x.id === id; });
+  if (!l) return;
+  document.getElementById('fSegundoContato').checked = !!l.segundoContatoFeito;
+  document.getElementById('fLigacao').checked = !!l.ligacaoFeita;
+  updateModalAlertBox(l);
+}
+function updateModalAlertBox(l) {
+  var box = document.getElementById('fAlertBox');
+  var alertState = getAlertState(l);
+  if (!alertState) { box.hidden = true; return; }
+  box.hidden = false;
+  box.className = 'alert-box ' + alertState;
+  if (alertState === 'amarelo') box.textContent = '⚠ Já passou 1 dia desde o 1º contato sem avanço — hora do 2º contato.';
+  else if (alertState === 'vermelho') box.textContent = '☎ Já passou 1 dia desde o 2º contato — hora de ligar.';
+  else box.textContent = '✓ Processo de contato finalizado.';
+}
+function showModal(id) { document.getElementById(id).hidden = false; }
+function hideModal(id) { document.getElementById(id).hidden = true; state.modalOpen = false; render(); }
+
+async function submitForm(e) {
+  e.preventDefault();
+  var id = document.getElementById('fId').value;
+  var nome = document.getElementById('fNome').value.trim();
+  if (!nome) { alert('Informe o nome do paciente.'); return; }
+  var btn = document.getElementById('btnSalvarEdicao');
+  btn.disabled = true;
+  try {
+    await writeUpdate(id, {
+      unidade: document.getElementById('fUnidade').value,
+      dataContato: document.getElementById('fData').value,
+      nome: nome,
+      telefone: document.getElementById('fTelefone').value.trim(),
+      especialidade: document.getElementById('fEspecialidade').value.trim(),
+      valor: parseFloat(document.getElementById('fValor').value) || 0,
+      status: document.getElementById('fStatus').value,
+      falouCartao: document.getElementById('fCartao').checked,
+      observacoes: document.getElementById('fObs').value,
+    });
+    hideModal('modalOverlay');
+  } finally {
+    btn.disabled = false;
+  }
+}
+async function excluirLead() {
+  var id = document.getElementById('fId').value;
+  if (!id) return;
+  if (!confirm('Excluir este orçamento? Essa ação não pode ser desfeita.')) return;
+  setSync('syncing', 'Excluindo...');
+  try {
+    await fbRequest('DELETE', '/leads/' + id);
+    state.leads = state.leads.filter(function (x) { return x.id !== id; });
+    setSync('', 'Sincronizado');
+    hideModal('modalOverlay');
+  } catch (e) {
+    setSync('error', 'Erro ao excluir');
+    alert('Não foi possível excluir. Tente novamente.');
+  }
+}
+function addNotaRapida() {
+  var input = document.getElementById('fNovaNota');
+  var texto = input.value.trim();
+  if (!texto) return;
+  var textarea = document.getElementById('fObs');
+  var linha = '[' + fmtDateBR(todayISO()) + '] ' + texto;
+  textarea.value = textarea.value ? textarea.value + '\n' + linha : linha;
+  input.value = '';
+}
+
+/* ---------------- cadastro em lote ---------------- */
+
+var bulkRowCounter = 0;
+
+function openBulkModal() {
+  document.getElementById('bulkUnidadePadrao').value = state.filters.unidade || UNITS[0];
+  document.getElementById('bulkDataPadrao').value = todayISO();
+  document.getElementById('bulkTbody').innerHTML = '';
+  for (var i = 0; i < 5; i++) addBulkRow();
+  showModal('bulkOverlay');
+}
+function addBulkRow() {
+  bulkRowCounter++;
+  var unidadePadrao = document.getElementById('bulkUnidadePadrao').value;
+  var dataPadrao = document.getElementById('bulkDataPadrao').value;
+  var unidadeOptions = UNITS.map(function (u) { return '<option value="' + esc(u) + '"' + (u === unidadePadrao ? ' selected' : '') + '>' + esc(u) + '</option>'; }).join('');
+  var tr = document.createElement('tr');
+  tr.dataset.rowId = 'br_' + bulkRowCounter;
+  tr.innerHTML =
+    '<td><select class="row-unidade">' + unidadeOptions + '</select></td>' +
+    '<td><input type="date" class="row-data" value="' + esc(dataPadrao) + '"></td>' +
+    '<td><input type="text" class="row-nome" placeholder="Nome completo"></td>' +
+    '<td><input type="text" class="row-telefone" placeholder="99999-9999"></td>' +
+    '<td><input type="text" class="row-especialidade" list="especialidadesList" placeholder="Ex: Laboratório"></td>' +
+    '<td><input type="number" class="row-valor" min="0" step="0.01" placeholder="0,00"></td>' +
+    '<td><button type="button" class="btn-remove-row" title="Remover linha">&times;</button></td>';
+  document.getElementById('bulkTbody').appendChild(tr);
+}
+async function salvarLote() {
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#bulkTbody tr'));
+  var novos = [];
+  rows.forEach(function (tr) {
+    var nome = tr.querySelector('.row-nome').value.trim();
+    if (!nome) return;
+    novos.push({
+      unidade: tr.querySelector('.row-unidade').value,
+      dataContato: tr.querySelector('.row-data').value || todayISO(),
+      nome: nome,
+      telefone: tr.querySelector('.row-telefone').value.trim(),
+      especialidade: tr.querySelector('.row-especialidade').value.trim(),
+      valor: parseFloat(tr.querySelector('.row-valor').value) || 0,
+      status: 'aguardando', falouCartao: false, observacoes: '',
+      segundoContatoFeito: false, segundoContatoData: null, ligacaoFeita: false, ligacaoData: null,
+    });
+  });
+  if (novos.length === 0) { alert('Preencha ao menos o nome de um paciente.'); return; }
+  var btn = document.getElementById('btnSalvarLote');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  setSync('syncing', 'Salvando...');
+  try {
+    var now = new Date().toISOString();
+    for (var i = 0; i < novos.length; i++) {
+      var data = Object.assign({ createdAt: now, updatedAt: now }, novos[i]);
+      var res = await fbRequest('POST', '/leads', data);
+      data.id = res.name;
+      state.leads.push(data);
+    }
+    setSync('', 'Sincronizado');
+    hideModal('bulkOverlay');
+  } catch (e) {
+    setSync('error', 'Erro ao salvar');
+    alert('Não foi possível salvar. Tente novamente.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Salvar todos';
+  }
+}
+
+/* ---------------- init ---------------- */
+
+function init() {
+  populateStaticSelects();
+  document.querySelectorAll('.tab-btn').forEach(function (b) { b.addEventListener('click', function () { switchView(b.dataset.view); }); });
+  document.getElementById('unitTabs').addEventListener('click', function (e) {
+    var btn = e.target.closest('.unit-tab-btn');
+    if (!btn) return;
+    state.filters.unidade = btn.dataset.unidade;
+    document.querySelectorAll('.unit-tab-btn').forEach(function (b) { b.classList.toggle('active', b === btn); });
+    render();
+  });
+  document.getElementById('filterEspecialidade').addEventListener('change', function (e) { state.filters.especialidade = e.target.value; render(); });
+  document.getElementById('filterBusca').addEventListener('input', function (e) { state.filters.busca = e.target.value; render(); });
+
+  document.getElementById('btnNovo').addEventListener('click', openBulkModal);
+  document.getElementById('modalClose').addEventListener('click', function () { hideModal('modalOverlay'); });
+  document.getElementById('btnCancelar').addEventListener('click', function () { hideModal('modalOverlay'); });
+  document.getElementById('leadForm').addEventListener('submit', submitForm);
+  document.getElementById('btnExcluir').addEventListener('click', excluirLead);
+  document.getElementById('btnAddNota').addEventListener('click', addNotaRapida);
+  document.getElementById('modalOverlay').addEventListener('click', function (e) { if (e.target.id === 'modalOverlay') hideModal('modalOverlay'); });
+  document.getElementById('fSegundoContato').addEventListener('change', function () { var id = document.getElementById('fId').value; if (id) toggleSegundoContato(id); });
+  document.getElementById('fLigacao').addEventListener('change', function () { var id = document.getElementById('fId').value; if (id) toggleLigacao(id); });
+
+  document.getElementById('bulkClose').addEventListener('click', function () { hideModal('bulkOverlay'); });
+  document.getElementById('bulkCancelar').addEventListener('click', function () { hideModal('bulkOverlay'); });
+  document.getElementById('bulkOverlay').addEventListener('click', function (e) { if (e.target.id === 'bulkOverlay') hideModal('bulkOverlay'); });
+  document.getElementById('btnAddRow').addEventListener('click', addBulkRow);
+  document.getElementById('btnSalvarLote').addEventListener('click', salvarLote);
+  document.getElementById('bulkTbody').addEventListener('click', function (e) {
+    var btn = e.target.closest('.btn-remove-row');
+    if (btn) btn.closest('tr').remove();
+  });
+
+  loadLeads(false);
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
