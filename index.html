@@ -27,6 +27,7 @@
 html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; }
 [hidden] { display: none !important; }
 .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+.wrap.wide { max-width: 1640px; }
 
 header.top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding-block: 22px 14px; }
 .brand { display: flex; align-items: center; gap: 12px; }
@@ -66,7 +67,7 @@ nav.unit-tabs { display: flex; gap: 6px; padding: 12px; margin-bottom: 14px; bac
 
 main { padding-bottom: 48px; min-height: 200px; }
 
-.kanban { display: grid; grid-template-columns: repeat(6, minmax(200px, 1fr)); gap: 12px; overflow-x: auto; }
+.kanban { display: grid; grid-template-columns: repeat(6, minmax(185px, 1fr)); gap: 10px; overflow-x: auto; }
 .kanban-col { background: var(--surface); border-radius: 14px; padding: 10px; min-height: 120px; border-top: 4px solid var(--lavender); box-shadow: var(--shadow); }
 .kanban-col.status-aguardando { border-top-color: #9aa2c9; }
 .kanban-col.status-contatado { border-top-color: var(--lavender); }
@@ -455,6 +456,7 @@ function render() {
   var filtered = getFilteredLeads();
   document.getElementById('filterCount').textContent = filtered.length + ' orçamento(s)';
   var app = document.getElementById('app');
+  document.querySelector('.wrap').classList.toggle('wide', state.view === 'kanban');
   if (state.view === 'kanban') app.innerHTML = renderKanban(filtered);
   else if (state.view === 'lista') app.innerHTML = renderLista(sortLeads(filtered));
   else app.innerHTML = renderDashboard(filtered);
