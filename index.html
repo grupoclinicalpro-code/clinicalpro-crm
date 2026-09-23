@@ -20,6 +20,7 @@
   --warn-bg: #fef3d6; --warn-text: #8a6314; --warn-border: #eccb6b;
   --danger-bg: #fde3e2; --danger-text: #9c2b26; --danger-border: #e5948f;
   --ok-bg: #e1f6ea; --ok-text: #1f6b41; --ok-border: #96d6b3;
+  --muted-bg: #e9eaf2; --muted-text: #565c7a; --muted-border: #c3c7db;
   --shadow: 0 4px 20px rgba(44, 57, 104, .08);
 }
 * { box-sizing: border-box; }
@@ -65,13 +66,14 @@ nav.unit-tabs { display: flex; gap: 6px; padding: 12px; margin-bottom: 14px; bac
 
 main { padding-bottom: 48px; min-height: 200px; }
 
-.kanban { display: grid; grid-template-columns: repeat(5, minmax(220px, 1fr)); gap: 12px; overflow-x: auto; }
+.kanban { display: grid; grid-template-columns: repeat(6, minmax(200px, 1fr)); gap: 12px; overflow-x: auto; }
 .kanban-col { background: var(--surface); border-radius: 14px; padding: 10px; min-height: 120px; border-top: 4px solid var(--lavender); box-shadow: var(--shadow); }
 .kanban-col.status-aguardando { border-top-color: #9aa2c9; }
 .kanban-col.status-contatado { border-top-color: var(--lavender); }
-.kanban-col.status-interessado { border-top-color: var(--warn-border); }
-.kanban-col.status-fechado { border-top-color: var(--success); }
-.kanban-col.status-sem_interesse { border-top-color: var(--danger-border); }
+.kanban-col.status-prestes_a_realizar { border-top-color: var(--warn-border); }
+.kanban-col.status-realizado { border-top-color: var(--success); }
+.kanban-col.status-perdido { border-top-color: var(--danger-border); }
+.kanban-col.status-sem_resposta { border-top-color: var(--muted-border); }
 .kanban-col-header { display: flex; justify-content: space-between; font-family: var(--font-display); font-weight: 700; font-size: 12.5px; color: var(--navy); margin-bottom: 8px; padding: 0 4px; }
 .kanban-col-header .count { color: var(--text-muted); }
 .kanban-cards { display: flex; flex-direction: column; gap: 8px; min-height: 30px; }
@@ -80,7 +82,7 @@ main { padding-bottom: 48px; min-height: 200px; }
 .lead-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: grab; }
 .lead-card.alert-amarelo { background: var(--warn-bg); border-color: var(--warn-border); }
 .lead-card.alert-vermelho { background: var(--danger-bg); border-color: var(--danger-border); }
-.lead-card.alert-concluido { background: var(--ok-bg); border-color: var(--ok-border); }
+.lead-card.alert-concluido { background: var(--muted-bg); border-color: var(--muted-border); }
 .lead-card .name { font-weight: 700; font-size: 13px; margin-bottom: 3px; }
 .lead-card .meta { font-size: 11.5px; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .lead-card .value { font-weight: 700; color: var(--navy); }
@@ -90,7 +92,7 @@ main { padding-bottom: 48px; min-height: 200px; }
 .alert-banner { margin-top: 8px; padding: 6px 8px; border-radius: 7px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 .alert-banner.amarelo { background: var(--warn-border); color: #4a3708; }
 .alert-banner.vermelho { background: var(--danger-border); color: #4a1512; }
-.alert-banner.concluido { background: var(--ok-border); color: #123822; }
+.alert-banner.concluido { background: var(--muted-border); color: #2c3149; }
 .alert-banner label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-weight: 700; white-space: nowrap; }
 .alert-banner input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; }
 
@@ -101,19 +103,20 @@ th { color: var(--text-muted); font-size: 10.5px; text-transform: uppercase; let
 tbody tr:hover { background: var(--lavender-soft); cursor: pointer; }
 tbody tr.alert-amarelo td { background: var(--warn-bg); }
 tbody tr.alert-vermelho td { background: var(--danger-bg); }
-tbody tr.alert-concluido td { background: var(--ok-bg); }
+tbody tr.alert-concluido td { background: var(--muted-bg); }
 td.obs-col { white-space: normal; max-width: 240px; color: var(--text-muted); font-size: 12px; }
 td.alert-cell { white-space: normal; min-width: 140px; }
 .status-pill { padding: 3px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
 .status-pill.status-aguardando { background: var(--lavender-soft); color: var(--text-muted); }
 .status-pill.status-contatado { background: var(--lavender-soft); color: var(--navy); }
-.status-pill.status-interessado { background: var(--warn-bg); color: var(--warn-text); }
-.status-pill.status-fechado { background: var(--ok-bg); color: var(--ok-text); }
-.status-pill.status-sem_interesse { background: var(--danger-bg); color: var(--danger-text); }
+.status-pill.status-prestes_a_realizar { background: var(--warn-bg); color: var(--warn-text); }
+.status-pill.status-realizado { background: var(--ok-bg); color: var(--ok-text); }
+.status-pill.status-perdido { background: var(--danger-bg); color: var(--danger-text); }
+.status-pill.status-sem_resposta { background: var(--muted-bg); color: var(--muted-text); }
 .alert-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
 .alert-pill.amarelo { background: var(--warn-border); color: #4a3708; }
 .alert-pill.vermelho { background: var(--danger-border); color: #4a1512; }
-.alert-pill.concluido { background: var(--ok-border); color: #123822; }
+.alert-pill.concluido { background: var(--muted-border); color: #2c3149; }
 .alert-pill input { width: 12px; height: 12px; }
 
 .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 14px; }
@@ -153,7 +156,7 @@ textarea { resize: vertical; }
 .alert-box { padding: 10px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 700; }
 .alert-box.amarelo { background: var(--warn-bg); color: var(--warn-text); }
 .alert-box.vermelho { background: var(--danger-bg); color: var(--danger-text); }
-.alert-box.concluido { background: var(--ok-bg); color: var(--ok-text); }
+.alert-box.concluido { background: var(--muted-bg); color: var(--muted-text); }
 .note-adder { display: flex; gap: 8px; }
 .note-adder input { flex: 1; }
 .modal-footer { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--border); padding-top: 14px; }
@@ -209,6 +212,7 @@ textarea { resize: vertical; }
   <div class="filterbar">
     <input type="search" id="filterBusca" placeholder="Buscar por nome ou telefone...">
     <select id="filterEspecialidade"><option value="">Todas as especialidades</option></select>
+    <select id="filterPeriodo"><option value="">Todos os períodos</option></select>
     <span class="filter-count" id="filterCount"></span>
   </div>
 
@@ -287,17 +291,18 @@ textarea { resize: vertical; }
 
 <script>
 var UNITS = ['Chã Grande', 'Pombos', 'Primavera', 'Rio Formoso', 'Sirinhaém'];
-var STATUS_ORDER = ['aguardando', 'contatado', 'interessado', 'fechado', 'sem_interesse'];
+var STATUS_ORDER = ['aguardando', 'contatado', 'prestes_a_realizar', 'realizado', 'perdido', 'sem_resposta'];
 var STATUS_LABELS = {
-  aguardando: 'Aguardando contato', contatado: 'Contatado', interessado: 'Interessado',
-  fechado: 'Fechado', sem_interesse: 'Sem interesse',
+  aguardando: 'Aguardando contato', contatado: 'Contatado', prestes_a_realizar: 'Prestes a realizar',
+  realizado: 'Realizado', perdido: 'Perdido', sem_resposta: 'Sem resposta',
 };
+var MESES_PT = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 var ESPECIALIDADE_SUGESTOES = ['Laboratório', 'Cardiologia', 'Endocrinologia', 'Ultrassom', 'Eco', 'Endovaginal', 'Raio-X', 'HPV'];
 var POLL_MS = 20000;
 
 var state = {
   leads: [], loaded: false, view: 'kanban',
-  filters: { unidade: '', busca: '', especialidade: '' },
+  filters: { unidade: '', busca: '', especialidade: '', periodo: '' },
   sort: { field: 'dataContato', dir: 'desc' },
   editingId: null, modalOpen: false,
 };
@@ -328,6 +333,7 @@ async function loadLeads(isPoll) {
       var l = obj[id]; l.id = id; return l;
     });
     state.loaded = true;
+    populatePeriodoSelect();
     setSync('', 'Sincronizado');
     if (!state.modalOpen) render();
   } catch (e) {
@@ -359,7 +365,7 @@ function getAlertState(l) {
   if (l.status !== 'contatado') return null;
   if (l.ligacaoFeita) return 'concluido';
   if (l.segundoContatoFeito) return daysSince(l.segundoContatoData) >= 1 ? 'vermelho' : null;
-  return daysSince(l.dataContato) >= 1 ? 'amarelo' : null;
+  return daysSince(l.contatadoEm) >= 1 ? 'amarelo' : null;
 }
 function specialtyCategories(esp) {
   var s = (esp || '').toLowerCase();
@@ -380,9 +386,32 @@ function getFilteredLeads() {
   return state.leads.filter(function (l) {
     if (f.unidade && l.unidade !== f.unidade) return false;
     if (f.especialidade && specialtyCategories(l.especialidade).indexOf(f.especialidade) === -1) return false;
+    if (f.periodo && (l.dataContato || '').slice(0, 7) !== f.periodo) return false;
     if (buscaLower && ((l.nome + ' ' + l.telefone).toLowerCase().indexOf(buscaLower) === -1)) return false;
     return true;
   });
+}
+function mesLabel(yyyymm) {
+  var parts = yyyymm.split('-');
+  var mes = MESES_PT[parseInt(parts[1], 10) - 1] || parts[1];
+  return mes.charAt(0).toUpperCase() + mes.slice(1) + ' ' + parts[0];
+}
+function populatePeriodoSelect() {
+  var sel = document.getElementById('filterPeriodo');
+  var atual = sel.value;
+  var meses = {};
+  state.leads.forEach(function (l) { if (l.dataContato) meses[l.dataContato.slice(0, 7)] = true; });
+  meses[todayISO().slice(0, 7)] = true;
+  var lista = Object.keys(meses).sort().reverse();
+  sel.innerHTML = '<option value="">Todos os períodos</option>' +
+    lista.map(function (m) { return '<option value="' + m + '">' + mesLabel(m) + '</option>'; }).join('');
+  if (!state.periodoInicializado) {
+    var mesAtual = todayISO().slice(0, 7);
+    if (lista.indexOf(mesAtual) !== -1) { sel.value = mesAtual; state.filters.periodo = mesAtual; }
+    state.periodoInicializado = true;
+  } else if (lista.indexOf(atual) !== -1 || atual === '') {
+    sel.value = atual;
+  }
 }
 function sortLeads(leads) {
   var field = state.sort.field, dir = state.sort.dir;
@@ -501,9 +530,9 @@ function renderDashboard(leads) {
   var ticketMedio = valorTotal / total;
   var valores = leads.map(function (l) { return l.valor || 0; });
   var maior = Math.max.apply(null, valores), menor = Math.min.apply(null, valores);
-  var fechados = leads.filter(function (l) { return l.status === 'fechado'; });
-  var semInteresse = leads.filter(function (l) { return l.status === 'sem_interesse'; });
-  var emAberto = leads.filter(function (l) { return ['fechado', 'sem_interesse'].indexOf(l.status) === -1; });
+  var fechados = leads.filter(function (l) { return l.status === 'realizado'; });
+  var semInteresse = leads.filter(function (l) { return l.status === 'perdido' || l.status === 'sem_resposta'; });
+  var emAberto = leads.filter(function (l) { return ['realizado', 'perdido', 'sem_resposta'].indexOf(l.status) === -1; });
   var valorConvertido = fechados.reduce(function (s, l) { return s + (l.valor || 0); }, 0);
   var valorPerdido = semInteresse.reduce(function (s, l) { return s + (l.valor || 0); }, 0);
   var valorAberto = emAberto.reduce(function (s, l) { return s + (l.valor || 0); }, 0);
@@ -532,7 +561,7 @@ function renderDashboard(leads) {
       var us = leads.filter(function (l) { return l.unidade === u; });
       if (us.length === 0) return '<tr><td>' + esc(u) + '</td><td colspan="4" style="color:var(--text-muted)">sem orçamentos</td></tr>';
       var uValor = us.reduce(function (s, l) { return s + (l.valor || 0); }, 0);
-      var uFechados = us.filter(function (l) { return l.status === 'fechado'; }).length;
+      var uFechados = us.filter(function (l) { return l.status === 'realizado'; }).length;
       var uTaxa = (uFechados / us.length) * 100;
       return '<tr><td>' + esc(u) + '</td><td>' + us.length + '</td><td>' + fmtMoney(uValor) + '</td><td>' + fmtMoney(uValor / us.length) + '</td><td>' + uTaxa.toFixed(0) + '%</td></tr>';
     }).join('');
@@ -614,6 +643,10 @@ async function toggleLigacao(id) {
 async function writeUpdate(id, patch) {
   setSync('syncing', 'Salvando...');
   patch = Object.assign({}, patch, { updatedAt: new Date().toISOString() });
+  if (patch.status === 'contatado') {
+    var current = state.leads.find(function (x) { return x.id === id; });
+    if (current && current.status !== 'contatado') patch.contatadoEm = todayISO();
+  }
   try {
     await fbRequest('PATCH', '/leads/' + id, patch);
     var l = state.leads.find(function (x) { return x.id === id; });
@@ -664,7 +697,7 @@ function updateModalAlertBox(l) {
   if (!alertState) { box.hidden = true; return; }
   box.hidden = false;
   box.className = 'alert-box ' + alertState;
-  if (alertState === 'amarelo') box.textContent = '⚠ Já passou 1 dia desde o 1º contato sem avanço — hora do 2º contato.';
+  if (alertState === 'amarelo') box.textContent = '⚠ Já passou 1 dia desde que entrou em "Contatado" — hora do 2º contato.';
   else if (alertState === 'vermelho') box.textContent = '☎ Já passou 1 dia desde o 2º contato — hora de ligar.';
   else box.textContent = '✓ Processo de contato finalizado.';
 }
@@ -800,6 +833,7 @@ function init() {
     render();
   });
   document.getElementById('filterEspecialidade').addEventListener('change', function (e) { state.filters.especialidade = e.target.value; render(); });
+  document.getElementById('filterPeriodo').addEventListener('change', function (e) { state.filters.periodo = e.target.value; render(); });
   document.getElementById('filterBusca').addEventListener('input', function (e) { state.filters.busca = e.target.value; render(); });
 
   document.getElementById('btnNovo').addEventListener('click', openBulkModal);
