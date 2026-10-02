@@ -892,15 +892,8 @@ function init() {
   document.getElementById('bulkCancelar').addEventListener('click', function () { hideModal('bulkOverlay'); });
   document.getElementById('bulkOverlay').addEventListener('click', function (e) { if (e.target.id === 'bulkOverlay') hideModal('bulkOverlay'); });
   document.getElementById('btnAddRow').addEventListener('click', addBulkRow);
-  document.getElementById('btnSalvarLote').addEventListener('click', salvarLote);
-  document.getElementById('bulkTbody').addEventListener('click', function (e) {
-    var btn = e.target.closest('.btn-remove-row');
-    if (btn) btn.closest('tr').remove();
+  document.getElementById('bulkDataPadrao').addEventListener('change', function (e) {
+    Array.prototype.forEach.call(document.querySelectorAll('#bulkTbody .row-data'), function (inp) { inp.value = e.target.value; });
   });
-
-  loadLeads(false);
-}
-document.addEventListener('DOMContentLoaded', init);
-</script>
-</body>
-</html>
+  document.getElementById('btnSalvarLote').addEventListener('click', salvarLote);
+  document.getElementById('bulkTbody').addEventListener
