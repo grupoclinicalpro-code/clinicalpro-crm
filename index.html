@@ -896,4 +896,14 @@ function init() {
     Array.prototype.forEach.call(document.querySelectorAll('#bulkTbody .row-data'), function (inp) { inp.value = e.target.value; });
   });
   document.getElementById('btnSalvarLote').addEventListener('click', salvarLote);
-  document.getElementById('bulkTbody').addEventListener
+  document.getElementById('bulkTbody').addEventListener('click', function (e) {
+    var btn = e.target.closest('.btn-remove-row');
+    if (btn) btn.closest('tr').remove();
+  });
+
+  loadLeads(false);
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
